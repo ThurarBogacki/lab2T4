@@ -3,11 +3,11 @@
 #include <stdlib.h>
 
 Fila* ultimo(Fila* fila){
-    Fila* ultimo  = fila;
-    for(ultimo; ultimo->prox!=NULL;ultimo=ultimo->prox){
-        continue;
+    Fila* last;
+    for(Fila* ultimo = fila; ultimo->prox!=NULL;ultimo=ultimo->prox){
+        last = ultimo;
     }
-    return ultimo;
+    return last;
 }
 
 Fila* adiciona_fila(Fila* fila, int pessoas){
