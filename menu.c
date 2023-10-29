@@ -29,7 +29,7 @@ Fila* chegou_pessoas(Fila* fila, Mesas** restMesas, int l, int c){
                         if(restMesas[i][j].disponivel){
                             restMesas[i][j].disponivel = false;
                             restMesas[i][j].pessoas = 4;
-                            numPessoas-=4;
+                            numPessoas= numPessoas-4;
                             i = l+1; // NUMERO MAGICO PRA SAIR DO LOOP
                             j = c+1; // NUMERO MAGICO PRA SAIR DO LOOP
                         }
@@ -48,10 +48,10 @@ Fila* chegou_pessoas(Fila* fila, Mesas** restMesas, int l, int c){
                 }
             }
         }
-    }else{
+    }else if(!tem_mesa(restMesas, l, c)){
         if(numPessoas>4){
             fila = adiciona_fila(fila,quatro);
-            numPessoas-=4;
+            numPessoas = numPessoas-4;
         }else{
             fila = adiciona_fila(fila,numPessoas);
             numPessoas=0;
@@ -84,7 +84,7 @@ Mesas** aloca_rest(Mesas** restMesas, int l, int c){
 
 void imprime_fila(Fila* fila){
     for(Fila* imprime=fila;imprime!=NULL;imprime=imprime->prox){
-        printf("%d \n", imprime->pessoas);
+        printf(" Fila: %d \n", imprime->pessoas);
     }
 }
 
@@ -148,6 +148,48 @@ void insere_pilha(Pilha* pilhaPrato){
     }
 }
 
+Fila* verifica_fila(Mesas** restMesas, Fila* fila, int qualMesa, int l, int c){
+    for(int i=0;i<l;i++){
+        for(int j=0;j<c;j++){
+            if(restMesas[i][j].numMesa == qualMesa && restMesas[i][j].disponivel){
+                if(fila!=NULL){
+                    restMesas[i][j].disponivel = false;
+                    restMesas[i][j].pessoas = fila->pessoas;
+                    Fila* t = fila;
+                    fila = fila->prox;
+                    free(t);
+                }
+            }
+        }
+    }
+    return fila;
+}
+
+void finalizar_refeicao(Fila* fila, Mesas** restMesas, Pilha* pilhaPratos, int l, int c){
+    int qualMesa, numPratos;
+    numPratos = quantidadePratos(pilhaPratos);
+    printf("Qual mesa deseja finalizar a refeicao? ");
+    scanf("%d",&qualMesa);
+    for(int i=0;i<l;i++){
+        for(int j=0;j<c;j++){
+            if(restMesas[i][j].numMesa == qualMesa && restMesas[i][j].disponivel == false){
+                restMesas[i][j].disponivel = true;
+                restMesas[i][j].pessoas = 0;
+                restMesas[i][j].pratos = 0;
+                if(numPratos>=4){
+                    restMesas[i][j].pratos = 4;
+                    for(int pop=0;pop<4;pop++){
+                        pilha_pop(pilhaPratos);
+                    }
+                }else{
+                    printf("Pratos insuficientes\n");
+                }
+                fila = verifica_fila(restMesas, fila, qualMesa, l, c);
+            }
+        }
+    }
+}
+
 void open_rest(){
     Mesas** restMesas = NULL;
     Pilha* pilhaPrato = pilha_cria();
@@ -172,6 +214,9 @@ void open_rest(){
         {
         case 1:
             fila = chegou_pessoas(fila, restMesas, l, c);
+            break;
+        case 2:
+            finalizar_refeicao(fila,restMesas,pilhaPrato,l,c);
             break;
         case 4:
             arrumaMesas(pilhaPrato,restMesas,l,c);

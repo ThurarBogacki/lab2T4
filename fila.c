@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 Fila* ultimo(Fila* fila){
-    Fila* last;
+    Fila* last = fila;
     for(Fila* ultimo = fila; ultimo->prox!=NULL;ultimo=ultimo->prox){
         last = ultimo;
     }
