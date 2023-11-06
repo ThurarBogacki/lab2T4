@@ -26,7 +26,6 @@ void pilha_pop (Pilha* p)
     PratosLista* t;
     if (pilha_vazia(p))
     {
-        printf("*** Acabou os pratos (adicione mais pratos a pilha)\n");
         return;
     }
     t = p->prim;
