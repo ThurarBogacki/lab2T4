@@ -52,14 +52,12 @@ Fila* libera_senha(Fila* fila, int senha){
     return fila;
 }
 
-Fila* libera_fila(Fila* fila){
-    if(fila == NULL){
-        printf("A fila ta vazia: ");
-        return NULL;
+Fila* removeFila(Fila* fila){
+    if(fila==NULL){
+        printf("Nao tem ninguem aguardando na fila");
+        return fila;
     }else{
-        Fila* head = (Fila*)malloc(sizeof(Fila));
-        head = fila;
-        head=head->prox;
+        Fila* head = fila->prox;
         free(fila);
         return head;
     }

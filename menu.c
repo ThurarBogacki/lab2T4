@@ -65,10 +65,10 @@ Fila* chegou_pessoas(Fila* fila, Mesas** restMesas, int l, int c, Pilha* pilhaPr
         if(numPessoas>4){
             fila = adiciona_fila(fila,quatro);
             numPessoas = numPessoas-4;
-            printf("Adicionando 4 pessoas na fila");
+            printf("Adicionando 4 pessoas na fila \n");
         }else{
             fila = adiciona_fila(fila,numPessoas);
-            printf("Adicionando %d pessoas na fila", numPessoas);
+            printf("Adicionando %d pessoas na fila \n", numPessoas);
             numPessoas=0;
         }
     }
@@ -118,7 +118,7 @@ Mesas** aloca_rest(Mesas** restMesas, int l, int c, Pilha* pilhaPrato){
 
 void imprime_fila(Fila* fila){
     for(Fila* imprime=fila;imprime!=NULL;imprime=imprime->prox){
-        printf(" Fila: %d | Ficha: %d \n", imprime->pessoas, imprime->ficha);
+        printf(" Fila: %d pessoas | Ficha: %d \n", imprime->pessoas, imprime->ficha);
     }
 }
 
@@ -183,29 +183,44 @@ void insere_pilha(Pilha* pilhaPrato){
     }
 }
 
-Fila* finalizar_refeicao(Fila* fila, Mesas** restMesas, Pilha* pilhaPratos, int l, int c){
-    int qualMesa, numPratos;
-    numPratos = quantidadePratos(pilhaPratos);
-    printf("Qual mesa deseja finalizar a refeicao? ");
-    scanf("%d",&qualMesa);
-    for(int i=0;i<l;i++){
-        for(int j=0;j<c;j++){
-            if(restMesas[i][j].numMesa == qualMesa && restMesas[i][j].disponivel == false){
-                restMesas[i][j].disponivel = true;
-                restMesas[i][j].pessoas = 0;
-                restMesas[i][j].pratos = 0;
-                if(numPratos>=4){
-                    restMesas[i][j].pratos = 4;
-                    for(int pop=0;pop<4;pop++){
-                        pilha_pop(pilhaPratos);
-                    }
-                }else{
-                    printf("Pratos insuficientes\n");
+Fila* verificaFila(Fila* fila, Mesas** restMesas, int l, int c){
+    for(int i = 0; i < l; i++){
+        for(int j = 0; j < c; j++){
+            if(restMesas[i][j].disponivel && restMesas[i][j].pratos!=0){
+                if(fila!=NULL){
+                    restMesas[i][j].pessoas = fila->pessoas;
+                    restMesas[i][j].disponivel = false;
+                    fila = removeFila(fila);
                 }
             }
         }
     }
-    retiraPratos(restMesas, pilhaPratos, l, c);
+    return fila;
+}
+
+Fila* finalizar_refeicao(Fila* fila, Mesas** restMesas, Pilha* pilhaPratos, int l, int c){
+    int qualMesa;
+    int pratos = contaPratos(pilhaPratos->prim);
+    printf("Qual mesa deseja finalizar a refeicao? ");
+    scanf("%d",&qualMesa);
+    for(int i = 0; i < l; i++){
+        for(int j = 0; j < c; j++){
+            if(restMesas[i][j].numMesa == qualMesa){
+                restMesas[i][j].pessoas = 0;
+                if(pratos >= 4){
+                    restMesas[i][j].pratos = 4;
+                    for (int count = 0; count < 4; count++){
+                        pilha_pop(pilhaPratos);
+                    }
+                }else{
+                    restMesas[i][j].pratos = 0;
+                    printf("Nao tem prato suficiente pra arrumar a mesa");
+                }
+                restMesas[i][j].disponivel = true;
+                fila = verificaFila(fila, restMesas, l, c);
+            }
+        }
+    }
     return fila;
 }
 
@@ -235,7 +250,7 @@ void open_rest(){
     restMesas = aloca_rest(restMesas, l, c, pilhaPrato);
     while (aberto)
     {
-        printf("1-Chegou Pessoas\n2-Finalizar Refeiçao\n3-Desistir da Fila\n4-Arruma Mesa \n5-Repor Pratos \n8-Printa Dados\n9-Sair\n");
+        printf("1-Chegou Pessoas\n2-Finalizar Refeicao\n3-Desistir da Fila\n4-Arruma Mesa \n5-Repor Pratos \n6-Printa Dados\n7-Sair\n");
         scanf("%d",&ctrl);
         switch (ctrl)
         {
@@ -254,12 +269,12 @@ void open_rest(){
         case 5:
             insere_pilha(pilhaPrato);
             break;
-        case 8:
+        case 6:
             imprimeMesa(restMesas, l, c);
             imprime_fila(fila);
             imprime_pilha(pilhaPrato);
             break;
-        case 9:
+        case 7:
             aberto=0;
             break;
         default:

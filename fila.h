@@ -6,4 +6,4 @@ struct fila{
 
 Fila* adiciona_fila(Fila* fila, int pessoas);
 Fila* libera_senha(Fila* fila, int senha);
-Fila* libera_fila(Fila* fila);
+Fila* removeFila(Fila* fila);
